@@ -31,19 +31,27 @@ function PdfTemplate(props) {
   const [editIndex, setEditIndex] = useState(null); // State for editing item
 
   const saveInvoiceToDB = async () => {
+    // Log the date for debugging purposes
+    console.log("Date:", props.date);
+
+    // Ensure date is valid and exists
+    const formattedDate = props.date
+      ? new Date(props.date.split("/").reverse().join("-"))
+      : new Date(); // Fallback to the current date if props.date is undefined
+
     const invoiceData = {
-      invoiceNumber: props.InvoiceNumber,  // Changed field to match schema
-      date: new Date(props.date.split("/").reverse().join("-")),
-      companyName: props.CompanyName,  // Changed field to match schema
-      careOf: props.CareOf,  // Changed field to match schema
+      invoiceNumber: props.InvoiceNumber, // Changed field to match schema
+      date: formattedDate,
+      companyName: props.CompanyName, // Changed field to match schema
+      careOf: props.CareOf, // Changed field to match schema
       contact: props.Contact,
-      items: List,  // Assuming 'List' is structured properly
+      items: List, // Assuming 'List' is structured properly
       gst: Gst,
       process: Process,
       balance: Balance,
       totalAmount: TotalAmount,
     };
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/pdfs", {
         method: "POST",
@@ -52,7 +60,7 @@ function PdfTemplate(props) {
         },
         body: JSON.stringify(invoiceData),
       });
-  
+
       if (response.ok) {
         console.log("Invoice saved to DB");
       } else {
@@ -62,8 +70,6 @@ function PdfTemplate(props) {
       console.error("Failed to save invoice to DB", error);
     }
   };
-  
-
 
   const addData = () => {
     if (editIndex !== null) {
